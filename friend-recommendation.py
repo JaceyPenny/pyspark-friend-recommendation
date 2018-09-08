@@ -113,7 +113,21 @@ def mutual_friend_count_to_recommendation(m):
 
 
 def recommendation_to_sorted_truncated(recs):
-    # Sort all the (user_id, mutual_count) items by "mutual_count"
+    if len(recs) > 1024:
+        # Before sorting, find the highest 10 elements in recs (if log(len(recs)) > 10)
+        max_indices = []
+
+        for current_rec_number in range(0, 10):
+            current_max_index = 0
+            for i in range(0, len(recs)):
+                rec = recs[i]
+                if rec[1] > rec[current_max_index] and i not in max_indices:
+                    current_max_index = i
+
+            max_indices.append(current_max_index)
+
+        recs = [recs[i] for i in max_indices]
+
     recs.sort(key=lambda x: x[1], reverse=True)
 
     # Map every [(user_id, mutual_count), ...] to [user_id, ...] and truncate to 10 elements
