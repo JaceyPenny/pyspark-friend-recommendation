@@ -128,7 +128,7 @@ def recommendation_to_sorted_truncated(recs):
 
         recs = [recs[i] for i in max_indices]
 
-    recs.sort(key=lambda x: x[1], reverse=True)
+    recs.sort(key=lambda x: (-x[1], x[0]))
 
     # Map every [(user_id, mutual_count), ...] to [user_id, ...] and truncate to 10 elements
     return list(map(lambda x: x[0], recs))[:10]
