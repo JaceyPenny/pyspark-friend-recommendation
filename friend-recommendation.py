@@ -18,7 +18,12 @@ def line_to_friend_ownership(line):
     """
     split = line.split()
     user_id = int(split[0])
-    friends = list(map(lambda x: int(x), split[1].split(',')))
+
+    if len(split) == 1:
+        friends = []
+    else:
+        friends = list(map(lambda x: int(x), split[1].split(',')))
+
     return user_id, friends
 
 
@@ -135,13 +140,13 @@ friend_ownership = lines.map(line_to_friend_ownership)
 friend_edges = friend_ownership.flatMap(friend_ownership_to_connection)
 friend_edges.cache()
 
-mutual_friend_counts = friend_edges.groupByKey()\
-            .filter(lambda edge: 0 not in edge[1])\
-            .map(lambda edge: (edge[0], sum(edge[1])))
+mutual_friend_counts = friend_edges.groupByKey() \
+    .filter(lambda edge: 0 not in edge[1]) \
+    .map(lambda edge: (edge[0], sum(edge[1])))
 
-recommendations = mutual_friend_counts.flatMap(mutual_friend_count_to_recommendation)\
-                                      .groupByKey()\
-                                      .map(lambda m: (m[0], recommendation_to_sorted_truncated(list(m[1]))))
+recommendations = mutual_friend_counts.flatMap(mutual_friend_count_to_recommendation) \
+    .groupByKey() \
+    .map(lambda m: (m[0], recommendation_to_sorted_truncated(list(m[1]))))
 
 # Save to output directory, end context
 recommendations.saveAsTextFile(sys.argv[2])

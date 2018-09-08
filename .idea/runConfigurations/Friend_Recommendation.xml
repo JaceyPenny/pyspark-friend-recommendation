@@ -5,7 +5,7 @@
     <option name="WORKING_DIRECTORY" value="" />
     <option name="PARENT_ENVS" value="true" />
     <option name="SCRIPT_NAME" value="run-spark.sh" />
-    <option name="PARAMETERS" value="network.txt output" />
+    <option name="PARAMETERS" value="sociNet.txt output" />
     <module name="" />
     <method v="2" />
   </configuration>

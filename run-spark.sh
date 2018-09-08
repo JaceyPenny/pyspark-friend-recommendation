@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 rm -rf output
-if spark-submit friend-recommendation.py $1 $2
+if spark-submit --driver-memory 8G friend-recommendation.py $1 $2
 then
     echo
     echo "FIRST 10 LINES OF OUTPUT"
