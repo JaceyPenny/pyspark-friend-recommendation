@@ -121,7 +121,7 @@ def recommendation_to_sorted_truncated(recs):
             current_max_index = 0
             for i in range(0, len(recs)):
                 rec = recs[i]
-                if rec[1] > rec[current_max_index] and i not in max_indices:
+                if rec[1] > recs[current_max_index][1] and i not in max_indices:
                     current_max_index = i
 
             max_indices.append(current_max_index)
