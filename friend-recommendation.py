@@ -115,19 +115,24 @@ def mutual_friend_count_to_recommendation(m):
 def recommendation_to_sorted_truncated(recs):
     if len(recs) > 1024:
         # Before sorting, find the highest 10 elements in recs (if log(len(recs)) > 10)
+        # This optimization runs in O(n), where n is the length of recs. This is so that sorting the best 10
+        # recommendations can run in constant time. Otherwise, sorting the whole list would run in O(n lgn). 
+        # As long as n > 1024 (or, in other words, lg(n) > 10), this is faster.
+
         max_indices = []
 
         for current_rec_number in range(0, 10):
             current_max_index = 0
-            for i in range(0, len(recs)):
+            for i in range(1, len(recs)):
                 rec = recs[i]
-                if rec[1] > recs[current_max_index][1] and i not in max_indices:
+                if rec[1] >= recs[current_max_index][1] and i not in max_indices:
                     current_max_index = i
 
             max_indices.append(current_max_index)
 
         recs = [recs[i] for i in max_indices]
 
+    # Sort first by mutual friend count, then by user_id (for equal number of mutual friends between users)
     recs.sort(key=lambda x: (-x[1], x[0]))
 
     # Map every [(user_id, mutual_count), ...] to [user_id, ...] and truncate to 10 elements
@@ -154,10 +159,13 @@ friend_ownership = lines.map(line_to_friend_ownership)
 friend_edges = friend_ownership.flatMap(friend_ownership_to_connection)
 friend_edges.cache()
 
+# Filter all pairs of users that are already friends, then sum all the "1" values to get their mutual friend count.
 mutual_friend_counts = friend_edges.groupByKey() \
     .filter(lambda edge: 0 not in edge[1]) \
     .map(lambda edge: (edge[0], sum(edge[1])))
 
+# Create the recommendation objects, group them by key, then sort and truncate the recommendations to the 10 most
+# highly recommended.
 recommendations = mutual_friend_counts.flatMap(mutual_friend_count_to_recommendation) \
     .groupByKey() \
     .map(lambda m: (m[0], recommendation_to_sorted_truncated(list(m[1]))))
