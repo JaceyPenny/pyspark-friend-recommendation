@@ -25,7 +25,7 @@ Note that every friendship (e.g. 0->2) is matched in reverse (e.g. 2->0) by both
 Have a friend network file handy. To execute the program, you do either of the following:
 
 ```bash
-spark-submit friend-recommendation NETWORK_FILE OUTPUT_DIRECTORY
+spark-submit friend-recommendation.py NETWORK_FILE OUTPUT_DIRECTORY
 ```
 
 OR
